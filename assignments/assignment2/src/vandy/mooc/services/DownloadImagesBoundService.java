@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.Messenger;
+import android.util.Log;
 
 /**
  * A Bound Service that concurrently downloads an image requested via
@@ -25,6 +26,7 @@ public class DownloadImagesBoundService extends LifecycleLoggingService {
      */
     private Messenger mRequestMessenger = null;
 
+    public static final String TAG = "POSA_SERVICE";
     /**
      * Factory method that returns an explicit Intent for downloading
      * an image.
@@ -33,7 +35,9 @@ public class DownloadImagesBoundService extends LifecycleLoggingService {
         // Create an intent that will download the image from the web.
     	// TODO -- you fill in here, replacing null with the proper
     	// code.
-        return null;
+    	Log.i(TAG, "Making service intent");
+    	Intent intent = new Intent(context, DownloadImagesBoundService.class);
+        return intent;
     }
 
     /**
@@ -44,9 +48,12 @@ public class DownloadImagesBoundService extends LifecycleLoggingService {
         // Create a RequestHandler used to handle request Messages
         // sent from an Activity.
     	// TODO -- you fill in here.
+    	Log.i(TAG, "Service OnCreate");
+    	mRequestHandler = new RequestHandler(this);
 
         // Create a Messenger that encapsulates the RequestHandler.
     	// TODO -- you fill in here.
+    	mRequestMessenger = new Messenger(mRequestHandler);
     }
 
     /**
@@ -56,6 +63,7 @@ public class DownloadImagesBoundService extends LifecycleLoggingService {
     @Override
     public IBinder onBind(Intent intent) {
         super.onBind(intent);
+        Log.i(TAG, "Service OnBind");
         // Return the iBinder associated with the Request Messenger.
         return mRequestMessenger.getBinder();
     }
@@ -68,7 +76,9 @@ public class DownloadImagesBoundService extends LifecycleLoggingService {
     public void onDestroy() {
         super.onDestroy();
 
+        Log.i(TAG, "Service OnDestroy");
         // Shutdown the RequestHandler.
     	// TODO -- you fill in here.
+        mRequestHandler.shutdown();
     }
 }

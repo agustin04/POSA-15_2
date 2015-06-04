@@ -52,6 +52,7 @@ public class ImageOpsBoundService extends ImageOpsImpl {
                 // returned IBinder object and store it for later use
                 // in mRequestMessengerRef.
                 // TODO -- you fill in here.
+                mRequestMessengerRef = new Messenger(binder);
             }
 
             /**
@@ -65,6 +66,7 @@ public class ImageOpsBoundService extends ImageOpsImpl {
                 // null, thereby preventing send() calls until it's
                 // reconnected.
                 // TODO -- you fill in here.
+                mRequestMessengerRef = null;
             }
 	};
 
@@ -84,16 +86,20 @@ public class ImageOpsBoundService extends ImageOpsImpl {
      */
     @Override
     public void bindService() {
+    	Log.i(TAG, "ImageOps BindService");
         if (mRequestMessengerRef == null) {
+        	Log.i(TAG, "ImageOps BindService not NULL");
             // Create a new intent to the DownloadImagesBoundService
             // that can download an image from the URL given by the
             // user.  
             // TODO - you fill in here.
+        	Intent intent = DownloadImagesBoundService.makeIntent(mActivity.get());
 
             Log.d(TAG, "calling bindService()");
 
             // Bind to the Service associated with the Intent.
             // TODO -- you fill in here.
+            mActivity.get().bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
         }
     }
 
@@ -102,14 +108,17 @@ public class ImageOpsBoundService extends ImageOpsImpl {
      */
     @Override
     public void unbindService() {
+    	Log.i(TAG, "ImageOps UNBindService");
         if (mRequestMessengerRef != null) {
             Log.d(TAG, "calling unbindService()");
             // Unbind from the Service.
             // TODO -- you fill in here.
+            mActivity.get().unbindService(mServiceConnection);
 
             // Set this field to null to trigger a call to
             // bindService() next time bindService() is called.
             // TODO -- you fill in here.
+            mRequestMessengerRef = null;
         }
     }
 
@@ -119,11 +128,15 @@ public class ImageOpsBoundService extends ImageOpsImpl {
      */
     @Override
     protected void startDownload(Uri url) {
-        if (mRequestMessengerRef == null) 
+    	Log.i(TAG, "ImageOps StartDownload");
+        if (mRequestMessengerRef == null){ 
+        	Log.i(TAG, "ImageOps StartDownload A1");
             Utils.showToast(mActivity.get(),
                             "not bound to the service");
-        else {
+            Log.i(TAG, "ImageOps StartDownload A2");
+        }else {
             try {
+            	Log.i(TAG, "ImageOps StartDownload B1");
                 // Create a RequestMessage that indicates the
                 // DownloadImagesBoundService should send the reply
                 // back to ReplyHandler encapsulated by the Messenger.
@@ -134,12 +147,15 @@ public class ImageOpsBoundService extends ImageOpsImpl {
                      mDirectoryPathname,
                      mReplyMessenger);
 
+                Log.i(TAG, "ImageOps StartDownload B2");
                 Log.d(TAG,
                       "sending a request message to DownloadImagesBoundService for "
                       + url.toString());
 
                 // Send the request Message to the DownloadService.
                 // TODO -- you fill in here.
+                mRequestMessengerRef.send(requestMessage.getMessage());
+                Log.i(TAG, "ImageOps StartDownload B3");
             } catch (Exception e) {
                 e.printStackTrace();
             }

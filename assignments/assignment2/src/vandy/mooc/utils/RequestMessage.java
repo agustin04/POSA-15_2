@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
+import android.util.Log;
 
 /**
  * A thin facade around an Android Message that defines the schema of
@@ -22,6 +23,7 @@ public class RequestMessage extends RequestReplyMessageBase {
      * Convert a Message into a RequestMessage.
      */
     public static RequestMessage makeRequestMessage(Message message) {
+    	Log.i("Request","makeRequestMessage");
         // Make a copy of @a message since it may be recycled.
         return new RequestMessage(Message.obtain(message));
     }
@@ -34,6 +36,7 @@ public class RequestMessage extends RequestReplyMessageBase {
                                                     Uri url,
                                                     String directoryPathname,
                                                     Messenger replyMessenger) {
+    	Log.i("Request","makeRequestMessage 1");
         // Create a RequestMessage that holds a reference to a Message
         // created via the Message.obtain() factory method.
         RequestMessage requestMessage =
@@ -41,22 +44,29 @@ public class RequestMessage extends RequestReplyMessageBase {
 
         // Store replyMessenger into the Message's replyTo field.
         // TODO -- you fill in here.
+        requestMessage.setMessenger(replyMessenger);
 
         // Create a new Bundle to handle the result.
         // TODO -- you fill in here.
+        Bundle bundle = new Bundle();
 
         // Set the Bundle as the "data" for the Message.
         // TODO -- you fill in here.
+        requestMessage.setData(bundle);
 
         // Put the URL to the image file into the Bundle
         // TODO -- you fill in here.
+        requestMessage.setImageURL(url);
 
         // Put the pathname to the directory into the Bundle
         // TODO -- you fill in here.
+        requestMessage.setDirectoryPathname(directoryPathname);
 
         // Put the request code into the Bundle
         // TODO -- you fill in here.
+        requestMessage.setRequestCode(requestCode);
 
+        Log.i("Request","makeRequestMessage 2");
         // Return the message to the caller.
         return requestMessage;
     }
